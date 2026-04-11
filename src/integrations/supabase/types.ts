@@ -14,7 +14,184 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      event_images: {
+        Row: {
+          created_at: string
+          display_order: number
+          event_id: string
+          id: string
+          image_url: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          event_id: string
+          id?: string
+          image_url: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          event_id?: string
+          id?: string
+          image_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_images_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          title: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          title: string
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      professional_photos: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          photo_url: string
+          professional_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          photo_url: string
+          professional_id: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          photo_url?: string
+          professional_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_photos_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professionals: {
+        Row: {
+          advantage: string | null
+          company_name: string
+          created_at: string
+          description: string | null
+          id: string
+          instagram: string | null
+          is_active: boolean
+          location: string | null
+          logo_url: string | null
+          owner_name: string | null
+          photo_url: string | null
+          segment: string
+          services: string[] | null
+          specialties: string[] | null
+          updated_at: string
+          whatsapp: string | null
+          working_hours: string | null
+        }
+        Insert: {
+          advantage?: string | null
+          company_name: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          instagram?: string | null
+          is_active?: boolean
+          location?: string | null
+          logo_url?: string | null
+          owner_name?: string | null
+          photo_url?: string | null
+          segment: string
+          services?: string[] | null
+          specialties?: string[] | null
+          updated_at?: string
+          whatsapp?: string | null
+          working_hours?: string | null
+        }
+        Update: {
+          advantage?: string | null
+          company_name?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          instagram?: string | null
+          is_active?: boolean
+          location?: string | null
+          logo_url?: string | null
+          owner_name?: string | null
+          photo_url?: string | null
+          segment?: string
+          services?: string[] | null
+          specialties?: string[] | null
+          updated_at?: string
+          whatsapp?: string | null
+          working_hours?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
