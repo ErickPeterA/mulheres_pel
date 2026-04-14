@@ -123,7 +123,6 @@ const EventForm = ({ onClose, onSaved }: { onClose: () => void; onSaved: () => v
         <button onClick={onClose}><X size={16} /></button>
       </div>
       <Input placeholder="Título *" value={title} onChange={(e) => setTitle(e.target.value)} className="rounded-xl" />
-      <Textarea placeholder="Descrição" value={description} onChange={(e) => setDescription(e.target.value)} className="rounded-xl" />
       <div>
         <label className="text-xs text-muted-foreground block mb-1">Imagens do evento</label>
         <input type="file" accept="image/*" multiple onChange={(e) => setImages(e.target.files)} className="text-xs" />

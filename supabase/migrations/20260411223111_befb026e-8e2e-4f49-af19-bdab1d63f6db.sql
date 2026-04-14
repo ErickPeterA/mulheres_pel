@@ -20,7 +20,7 @@ CREATE TABLE public.professionals (
   services TEXT[] DEFAULT '{}',
   description TEXT,
   location TEXT,
-  advantage TEXT,
+  advantage TEXT NOT NULL,
   working_hours TEXT,
   whatsapp TEXT,
   instagram TEXT,

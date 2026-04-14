@@ -36,6 +36,7 @@ const Index = () => {
   }, [professionals, search]);
 
   return (
+    
     <MobileLayout>
       <Header />
       <SearchBar value={search} onChange={setSearch} />

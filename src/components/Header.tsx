@@ -9,10 +9,8 @@ const Header = () => {
     <>
       <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">CP</span>
-          </div>
-          <span className="font-bold text-foreground text-lg">Catálogo</span>
+          <img src="/public/Logo_header.png" alt=""  className="w-11"/>
+          <span className="font-bold text-foreground text-lg">Mulheres Empreendedoras</span>
         </div>
 
         <div className="flex items-center gap-2">

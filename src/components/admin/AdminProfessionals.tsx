@@ -187,13 +187,13 @@ const ProfessionalForm = ({ professional, onClose, onSaved }: ProfessionalFormPr
       <Input placeholder="Serviços (separados por vírgula)" value={form.services} onChange={(e) => handleChange("services", e.target.value)} className="rounded-xl" />
       <Textarea placeholder="Descrição" value={form.description} onChange={(e) => handleChange("description", e.target.value)} className="rounded-xl" />
       <Input placeholder="Localização" value={form.location} onChange={(e) => handleChange("location", e.target.value)} className="rounded-xl" />
-      <Input placeholder="Vantagem / Promoção" value={form.advantage} onChange={(e) => handleChange("advantage", e.target.value)} className="rounded-xl" />
+      <Input placeholder="Vantagem / Promoção *" value={form.advantage} onChange={(e) => handleChange("advantage", e.target.value)} className="rounded-xl" />
       <Input placeholder="Horário de funcionamento" value={form.working_hours} onChange={(e) => handleChange("working_hours", e.target.value)} className="rounded-xl" />
-      <Input placeholder="WhatsApp (ex: 5511999999999)" value={form.whatsapp} onChange={(e) => handleChange("whatsapp", e.target.value)} className="rounded-xl" />
-      <Input placeholder="Instagram (ex: @usuario)" value={form.instagram} onChange={(e) => handleChange("instagram", e.target.value)} className="rounded-xl" />
+      <Input placeholder="WhatsApp (ex: 5553981847352)" value={form.whatsapp} onChange={(e) => handleChange("whatsapp", e.target.value)} className="rounded-xl" />
+      <Input placeholder="Instagram (ex: @ do usuario)" value={form.instagram} onChange={(e) => handleChange("instagram", e.target.value)} className="rounded-xl" />
 
       <div>
-        <label className="text-xs text-muted-foreground block mb-1">Foto principal</label>
+        <label className="text-xs text-muted-foreground block mb-2">Foto de Perfil</label>
         <input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] || null)} className="text-xs" />
       </div>
 
