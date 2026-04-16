@@ -51,7 +51,7 @@ const ImageLightbox = ({ images, initialIndex, open, onOpenChange }: ImageLightb
           {/* Close button */}
           <button
             onClick={() => onOpenChange(false)}
-            className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+            className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white hover:bg-black/60 transition-colors"
           >
             <X size={20} />
           </button>
@@ -60,7 +60,7 @@ const ImageLightbox = ({ images, initialIndex, open, onOpenChange }: ImageLightb
           {images.length > 1 && current > 0 && (
             <button
               onClick={goPrev}
-              className="absolute left-2 z-50 w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+              className="absolute left-2 z-50 w-10 h-10 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white hover:bg-black/60 transition-colors"
             >
               <ChevronLeft size={22} />
             </button>
@@ -68,7 +68,7 @@ const ImageLightbox = ({ images, initialIndex, open, onOpenChange }: ImageLightb
           {images.length > 1 && current < images.length - 1 && (
             <button
               onClick={goNext}
-              className="absolute right-2 z-50 w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+              className="absolute right-2 z-50 w-10 h-10 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white hover:bg-black/60 transition-colors"
             >
               <ChevronRight size={22} />
             </button>
