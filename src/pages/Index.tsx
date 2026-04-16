@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import SearchBar from "@/components/SearchBar";
 import EventCarousel from "@/components/EventCarousel";
 import ProfessionalCard from "@/components/ProfessionalCard";
+import ScrollToTop from "@/components/ScrollToTop";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {

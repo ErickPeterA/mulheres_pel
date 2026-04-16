@@ -18,6 +18,33 @@ import {
   Image,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import ImageLightbox from "@/components/ImageLightbox";
+
+const PortfolioGallery = ({ photos }: { photos: { id: string; photo_url: string }[] }) => {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const images = photos.map((p) => ({ url: p.photo_url }));
+
+  return (
+    <div className="px-4 mt-5">
+      <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground mb-3">
+        <Image size={16} className="text-primary" /> Portfólio
+      </h3>
+      <div className="grid grid-cols-3 gap-1.5">
+        {photos.map((photo, idx) => (
+          <div
+            key={photo.id}
+            className="aspect-square rounded-xl overflow-hidden bg-secondary cursor-pointer"
+            onClick={() => { setLightboxIndex(idx); setLightboxOpen(true); }}
+          >
+            <img src={photo.photo_url} alt="Portfólio" className="w-full h-full object-cover" />
+          </div>
+        ))}
+      </div>
+      <ImageLightbox images={images} initialIndex={lightboxIndex} open={lightboxOpen} onOpenChange={setLightboxOpen} />
+    </div>
+  );
+};
 
 const ProfessionalProfile = () => {
   const { id } = useParams();
