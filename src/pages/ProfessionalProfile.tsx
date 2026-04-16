@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -197,22 +198,7 @@ const ProfessionalProfile = () => {
 
         {/* Portfolio */}
         {photos.length > 0 && (
-          <div className="px-4 mt-5">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground mb-3">
-              <Image size={16} className="text-primary" /> Portfólio
-            </h3>
-            <div className="grid grid-cols-3 gap-1.5">
-              {photos.map((photo) => (
-                <div key={photo.id} className="aspect-square rounded-xl overflow-hidden bg-secondary">
-                  <img
-                    src={photo.photo_url}
-                    alt="Portfólio"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+          <PortfolioGallery photos={photos} />
         )}
       </motion.div>
     </MobileLayout>

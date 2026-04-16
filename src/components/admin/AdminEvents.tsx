@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Trash2, X, Save } from "lucide-react";
+import { Plus, Trash2, X, Save, ChevronUp, ChevronDown } from "lucide-react";
 
 const AdminEvents = () => {
   const queryClient = useQueryClient();
@@ -17,7 +17,7 @@ const AdminEvents = () => {
       const { data, error } = await supabase
         .from("events")
         .select("*, event_images(*)")
-        .order("created_at", { ascending: false });
+        .order("display_order", { ascending: true });
       if (error) throw error;
       return data;
     },
@@ -35,6 +35,27 @@ const AdminEvents = () => {
     },
   });
 
+  const reorderMutation = useMutation({
+    mutationFn: async ({ id, direction }: { id: string; direction: "up" | "down" }) => {
+      const idx = events.findIndex((e) => e.id === id);
+      if (idx < 0) return;
+      const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+      if (swapIdx < 0 || swapIdx >= events.length) return;
+
+      const a = events[idx];
+      const b = events[swapIdx];
+
+      await Promise.all([
+        supabase.from("events").update({ display_order: swapIdx }).eq("id", a.id),
+        supabase.from("events").update({ display_order: idx }).eq("id", b.id),
+      ]);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-events"] });
+      queryClient.invalidateQueries({ queryKey: ["events-with-images"] });
+    },
+  });
+
   return (
     <div className="space-y-4">
       <Button onClick={() => setShowForm(!showForm)} className="w-full rounded-xl gap-2">
@@ -49,16 +70,33 @@ const AdminEvents = () => {
             queryClient.invalidateQueries({ queryKey: ["admin-events"] });
             queryClient.invalidateQueries({ queryKey: ["events-with-images"] });
           }}
+          nextOrder={events.length}
         />
       )}
 
-      {events.map((ev) => (
+      {events.map((ev, idx) => (
         <div key={ev.id} className="bg-card border border-border rounded-xl p-3">
           <div className="flex items-start justify-between gap-2">
-            <div>
+            <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm">{ev.title}</p>
               <p className="text-xs text-muted-foreground">{ev.description}</p>
               <p className="text-xs text-primary mt-1">{(ev.event_images || []).length} imagens</p>
+            </div>
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={() => reorderMutation.mutate({ id: ev.id, direction: "up" })}
+                disabled={idx === 0}
+                className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center hover:bg-accent disabled:opacity-30 transition-colors"
+              >
+                <ChevronUp size={14} />
+              </button>
+              <button
+                onClick={() => reorderMutation.mutate({ id: ev.id, direction: "down" })}
+                disabled={idx === events.length - 1}
+                className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center hover:bg-accent disabled:opacity-30 transition-colors"
+              >
+                <ChevronDown size={14} />
+              </button>
             </div>
             <button onClick={() => deleteMutation.mutate(ev.id)} className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center hover:bg-destructive/20 text-destructive">
               <Trash2 size={14} />
@@ -77,7 +115,7 @@ const AdminEvents = () => {
   );
 };
 
-const EventForm = ({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) => {
+const EventForm = ({ onClose, onSaved, nextOrder }: { onClose: () => void; onSaved: () => void; nextOrder: number }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState<FileList | null>(null);
@@ -90,7 +128,7 @@ const EventForm = ({ onClose, onSaved }: { onClose: () => void; onSaved: () => v
 
     const { data: event, error } = await supabase
       .from("events")
-      .insert({ title, description: description || null })
+      .insert({ title, description: description || null, display_order: nextOrder })
       .select()
       .single();
     if (error) { toast({ title: "Erro ao criar evento", variant: "destructive" }); return; }
