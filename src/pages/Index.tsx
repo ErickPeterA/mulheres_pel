@@ -61,12 +61,15 @@ const Index = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {filtered.map((pro) => (
-              <ProfessionalCard key={pro.id} professional={pro} />
+            {filtered.map((pro, idx) => (
+              <div key={pro.id} {...(idx === 0 ? { "data-professional-card": true } : {})}>
+                <ProfessionalCard professional={pro} />
+              </div>
             ))}
           </div>
         )}
       </div>
+      <ScrollToTop />
     </MobileLayout>
   );
 };
