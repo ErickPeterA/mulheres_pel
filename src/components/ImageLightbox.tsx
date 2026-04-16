@@ -36,7 +36,7 @@ const ImageLightbox = ({ images, initialIndex, open, onOpenChange }: ImageLightb
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[100vw] max-h-[100dvh] w-screen h-[100dvh] p-0 border-0 bg-background/80 backdrop-blur-2xl rounded-none [&>button]:hidden">
+      <DialogContent className="max-w-[100vw] max-h-[100dvh] w-screen h-[100dvh] p-0 border-0 bg-transparent rounded-none [&>button]:hidden" overlayClassName="bg-background/60 backdrop-blur-xl">
         <div
           className="relative w-full h-full flex items-center justify-center"
           onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
