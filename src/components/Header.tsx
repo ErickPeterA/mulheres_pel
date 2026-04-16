@@ -9,7 +9,7 @@ const Header = () => {
     <>
       <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <img src="/public/logo_def.jpeg" alt=""  className="w-[4.1rem]"/>
+          <img src="/logo_def.jpeg" alt=""  className="w-[4.1rem]"/>
           <span className="font-bold text-[0.799rem] text-lg">Mulheres Empreendedoras Pelotas</span>
         </div>
 
