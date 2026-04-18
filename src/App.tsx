@@ -8,6 +8,8 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import WelcomeProfileModal from "@/components/WelcomeProfileModal";
 import Index from "./pages/Index";
 import ProfessionalProfile from "./pages/ProfessionalProfile";
+import MyProfile from "./pages/MyProfile";
+import UserProfile from "./pages/UserProfile";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
@@ -27,7 +29,30 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/professional/:id" element={<ProfessionalProfile />} />
+            <Route
+              path="/meu-perfil"
+              element={
+                <ProtectedRoute>
+                  <MyProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/perfil/:code"
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/professional/:id"
+              element={
+                <ProtectedRoute>
+                  <ProfessionalProfile />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/admin"
               element={

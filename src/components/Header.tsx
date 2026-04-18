@@ -1,4 +1,4 @@
-import { Bell, LogIn, LogOut, Shield, User } from "lucide-react";
+import { Bell, LogIn, LogOut, Shield, User, UserCircle } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,7 +23,7 @@ const Header = () => {
         <div className="flex items-center gap-2">
           <img src="/logo_def.jpeg" alt="" className="w-[4.1rem]" />
           <span className="font-bold text-[0.799rem] text-lg">Mulheres Empreendedoras Pelotas</span>
-        </div> 
+        </div>
 
         <div className="flex items-center gap-2">
           <button
@@ -43,6 +43,9 @@ const Header = () => {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="truncate text-xs">{user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/meu-perfil")}>
+                  <UserCircle size={14} className="mr-2" /> Meu Perfil
+                </DropdownMenuItem>
                 {isAdmin && (
                   <DropdownMenuItem onClick={() => navigate("/admin")}>
                     <Shield size={14} className="mr-2" /> Painel Admin
