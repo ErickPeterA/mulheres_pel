@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import AdminProfessionals from "@/components/admin/AdminProfessionals";
+import AdminUsers from "@/components/admin/AdminUsers";
 import AdminEvents from "@/components/admin/AdminEvents";
 import AdminNotifications from "@/components/admin/AdminNotifications";
 
@@ -24,15 +24,15 @@ const Admin = () => {
       </div>
 
       <div className="p-4">
-        <Tabs defaultValue="professionals" className="w-full">
+        <Tabs defaultValue="users" className="w-full">
           <TabsList className="w-full grid grid-cols-3 bg-secondary rounded-xl h-10">
-            <TabsTrigger value="professionals" className="rounded-lg text-xs">Profissionais</TabsTrigger>
+            <TabsTrigger value="users" className="rounded-lg text-xs">Usuários</TabsTrigger>
             <TabsTrigger value="events" className="rounded-lg text-xs">Eventos</TabsTrigger>
             <TabsTrigger value="notifications" className="rounded-lg text-xs">Notificações</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="professionals" className="mt-4">
-            <AdminProfessionals />
+          <TabsContent value="users" className="mt-4">
+            <AdminUsers />
           </TabsContent>
           <TabsContent value="events" className="mt-4">
             <AdminEvents />
