@@ -23,7 +23,7 @@ const Header = () => {
         <div className="flex items-center gap-2">
           <img src="/logo_def.jpeg" alt="" className="w-[4.1rem]" />
           <span className="font-bold text-[0.799rem] text-lg">Mulheres Empreendedoras Pelotas</span>
-        </div>
+        </div> 
 
         <div className="flex items-center gap-2">
           <button
