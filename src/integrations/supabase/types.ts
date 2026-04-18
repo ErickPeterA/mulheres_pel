@@ -197,42 +197,108 @@ export type Database = {
       }
       profiles: {
         Row: {
+          advantage: string | null
           avatar_url: string | null
+          company_name: string | null
           created_at: string
+          description: string | null
           email: string
           full_name: string | null
           id: string
+          instagram: string | null
           lgpd_consent: boolean
           lgpd_consent_at: string | null
+          location: string | null
+          logo_url: string | null
+          owner_name: string | null
           phone: string | null
+          photo_url: string | null
           profile_completed: boolean
+          segment: string | null
+          services: string[] | null
+          specialties: string[] | null
           updated_at: string
+          user_code: string | null
           user_id: string
+          whatsapp: string | null
+          working_hours: string | null
         }
         Insert: {
+          advantage?: string | null
           avatar_url?: string | null
+          company_name?: string | null
           created_at?: string
+          description?: string | null
           email: string
           full_name?: string | null
           id?: string
+          instagram?: string | null
           lgpd_consent?: boolean
           lgpd_consent_at?: string | null
+          location?: string | null
+          logo_url?: string | null
+          owner_name?: string | null
           phone?: string | null
+          photo_url?: string | null
           profile_completed?: boolean
+          segment?: string | null
+          services?: string[] | null
+          specialties?: string[] | null
           updated_at?: string
+          user_code?: string | null
           user_id: string
+          whatsapp?: string | null
+          working_hours?: string | null
         }
         Update: {
+          advantage?: string | null
           avatar_url?: string | null
+          company_name?: string | null
           created_at?: string
+          description?: string | null
           email?: string
           full_name?: string | null
           id?: string
+          instagram?: string | null
           lgpd_consent?: boolean
           lgpd_consent_at?: string | null
+          location?: string | null
+          logo_url?: string | null
+          owner_name?: string | null
           phone?: string | null
+          photo_url?: string | null
           profile_completed?: boolean
+          segment?: string | null
+          services?: string[] | null
+          specialties?: string[] | null
           updated_at?: string
+          user_code?: string | null
+          user_id?: string
+          whatsapp?: string | null
+          working_hours?: string | null
+        }
+        Relationships: []
+      }
+      user_photos: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          photo_url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          photo_url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          photo_url?: string
           user_id?: string
         }
         Relationships: []
@@ -263,6 +329,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_unique_user_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
