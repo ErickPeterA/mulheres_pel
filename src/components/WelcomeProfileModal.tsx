@@ -1,60 +1,44 @@
 import { useEffect, useState } from "react";
-import { z } from "zod";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Sparkles, Hash, Copy, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Sparkles } from "lucide-react";
-
-const nameSchema = z.string().trim().min(2, "Nome muito curto").max(100);
-const phoneSchema = z.string().trim().max(20).optional().or(z.literal(""));
 
 const WelcomeProfileModal = () => {
-  const { user, profileCompleted, loading, refreshProfile } = useAuth();
+  const { user, profileCompleted, loading } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [userCode, setUserCode] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (!loading && user && !profileCompleted) {
+    const check = async () => {
+      if (loading || !user || profileCompleted) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("user_code")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      setUserCode(data?.user_code ?? null);
       setOpen(true);
-    }
+    };
+    check();
   }, [loading, user, profileCompleted]);
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      nameSchema.parse(fullName);
-      phoneSchema.parse(phone);
-    } catch (err) {
-      const msg = err instanceof z.ZodError ? err.errors[0].message : (err as Error).message;
-      toast({ title: "Erro", description: msg, variant: "destructive" });
-      return;
-    }
-    if (!user) return;
-    setSubmitting(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        full_name: fullName.trim(),
-        phone: phone.trim() || null,
-        profile_completed: true,
-        lgpd_consent: true,
-        lgpd_consent_at: new Date().toISOString(),
-      })
-      .eq("user_id", user.id);
-    setSubmitting(false);
-    if (error) {
-      toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
-      return;
-    }
-    toast({ title: "Perfil salvo! Bem-vinda 💖" });
-    await refreshProfile();
+  const handleCopy = () => {
+    if (!userCode) return;
+    navigator.clipboard.writeText(userCode);
+    setCopied(true);
+    toast({ title: "Código copiado!" });
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleContinue = () => {
     setOpen(false);
+    navigate("/meu-perfil");
   };
 
   return (
@@ -64,37 +48,42 @@ const WelcomeProfileModal = () => {
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
             <Sparkles className="text-primary" size={24} />
           </div>
-          <DialogTitle className="text-center">Bem-vinda!</DialogTitle>
+          <DialogTitle className="text-center">Bem-vinda! 💖</DialogTitle>
           <DialogDescription className="text-center">
-            Complete seu perfil para uma experiência personalizada.
+            Esse é o seu código único na plataforma. Outras pessoas podem te encontrar buscando por ele.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSave} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="welcome-name">Nome completo *</Label>
-            <Input
-              id="welcome-name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="rounded-xl"
-              required
-            />
+
+        {userCode && (
+          <div className="my-2">
+            <button
+              onClick={handleCopy}
+              className="w-full bg-primary/5 border-2 border-dashed border-primary/30 rounded-xl py-4 px-4 flex items-center justify-center gap-3 hover:bg-primary/10 transition-colors"
+            >
+              <Hash className="text-primary" size={22} />
+              <span className="font-mono font-bold text-2xl tracking-widest text-primary">
+                {userCode}
+              </span>
+              {copied ? (
+                <Check size={18} className="text-primary" />
+              ) : (
+                <Copy size={18} className="text-muted-foreground" />
+              )}
+            </button>
+            <p className="text-[11px] text-center text-muted-foreground mt-2">
+              Toque para copiar
+            </p>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="welcome-phone">Telefone (opcional)</Label>
-            <Input
-              id="welcome-phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="rounded-xl"
-              placeholder="(53) 9XXXX-XXXX"
-            />
-          </div>
-          <Button type="submit" className="w-full rounded-xl" disabled={submitting}>
-            {submitting ? <Loader2 className="animate-spin" size={16} /> : "Salvar e continuar"}
+        )}
+
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground text-center">
+            Agora vamos completar o seu perfil para que outras pessoas possam te conhecer.
+          </p>
+          <Button onClick={handleContinue} className="w-full rounded-xl">
+            Completar meu perfil
           </Button>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );
