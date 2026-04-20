@@ -110,17 +110,28 @@ const UserProfile = () => {
       </div>
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="pb-8">
-        {/* Hero */}
-        <div className="px-4 pt-5 pb-4 flex flex-col items-center text-center">
-          <div className="w-24 h-24 rounded-2xl bg-secondary overflow-hidden mb-3 shadow-lg">
-            {photo ? (
-              <img src={photo} alt={displayName} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-primary/40">
-                {displayName.charAt(0).toUpperCase()}
-              </div>
+        {/* Capa + Avatar (estilo LinkedIn) */}
+        <div className="relative">
+          <div className="w-full aspect-[3/1] bg-gradient-to-br from-primary/20 to-primary/5 overflow-hidden">
+            {(profile as any).cover_url && (
+              <img src={(profile as any).cover_url} alt="Capa" className="w-full h-full object-cover" />
             )}
           </div>
+          <div className="absolute left-1/2 -translate-x-1/2 -bottom-12">
+            <div className="w-24 h-24 rounded-full bg-secondary overflow-hidden ring-4 ring-background shadow-lg">
+              {photo ? (
+                <img src={photo} alt={displayName} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-primary/40">
+                  {displayName.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Hero */}
+        <div className="px-4 pt-14 pb-4 flex flex-col items-center text-center">
           <h2 className="font-bold text-lg text-foreground">{displayName}</h2>
           {profile.full_name && profile.company_name && (
             <p className="text-sm text-muted-foreground">{profile.full_name}</p>
