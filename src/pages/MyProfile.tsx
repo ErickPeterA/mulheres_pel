@@ -22,7 +22,6 @@ const profileSchema = z.object({
   instagram: z.string().trim().max(60).optional().or(z.literal("")),
   working_hours: z.string().trim().max(200).optional().or(z.literal("")),
   advantage: z.string().trim().max(500).optional().or(z.literal("")),
-  phone: z.string().trim().max(30).optional().or(z.literal("")),
 });
 
 const MyProfile = () => {
@@ -40,7 +39,6 @@ const MyProfile = () => {
     instagram: "",
     working_hours: "",
     advantage: "",
-    phone: "",
     specialties: [] as string[],
     services: [] as string[],
   });
@@ -98,7 +96,6 @@ const MyProfile = () => {
         instagram: profile.instagram || "",
         working_hours: profile.working_hours || "",
         advantage: profile.advantage || "",
-        phone: profile.phone || "",
         specialties: profile.specialties || [],
         services: profile.services || [],
       });
@@ -219,7 +216,6 @@ const MyProfile = () => {
         instagram: form.instagram.trim() || null,
         working_hours: form.working_hours.trim() || null,
         advantage: form.advantage.trim() || null,
-        phone: form.phone.trim() || null,
         specialties: form.specialties,
         services: form.services,
         photo_url: photoUrl,
@@ -327,12 +323,11 @@ const MyProfile = () => {
           <Field label="Nome da empresa" value={form.company_name} onChange={(v) => setForm({ ...form, company_name: v })} />
           <Field label="Segmento" value={form.segment} onChange={(v) => setForm({ ...form, segment: v })} placeholder="Ex: Beleza, Moda, Gastronomia..." />
           <TextArea label="Sobre / Descrição" value={form.description} onChange={(v) => setForm({ ...form, description: v })} />
-          <Field label="Vantagem exclusiva" value={form.advantage} onChange={(v) => setForm({ ...form, advantage: v })} placeholder="Benefício para membros" />
+          <Field label="Vantagem exclusiva" value={form.advantage} onChange={(v) => setForm({ ...form, advantage: v })} placeholder="Benefício exclusivo" />
           <Field label="Localização" value={form.location} onChange={(v) => setForm({ ...form, location: v })} />
           <Field label="Horário de funcionamento" value={form.working_hours} onChange={(v) => setForm({ ...form, working_hours: v })} />
-          <Field label="WhatsApp" value={form.whatsapp} onChange={(v) => setForm({ ...form, whatsapp: v })} placeholder="(53) 9XXXX-XXXX" />
-          <Field label="Instagram" value={form.instagram} onChange={(v) => setForm({ ...form, instagram: v })} placeholder="@seuusuario" />
-          <Field label="Telefone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+          <Field label="WhatsApp" value={form.whatsapp} onChange={(v) => setForm({ ...form, whatsapp: v })} placeholder="5553981XXXXXX" />
+          <Field label="Instagram" value={form.instagram} onChange={(v) => setForm({ ...form, instagram: v })} placeholder="Seu @ (somente o nome)" />
 
           {/* Especialidades */}
           <TagEditor

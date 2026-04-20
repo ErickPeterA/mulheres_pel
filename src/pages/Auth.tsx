@@ -169,6 +169,7 @@ const Auth = () => {
                 <div className="relative">
                   <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
+                  placeholder="Insira seu E-mail"
                     id="login-email"
                     type="email"
                     autoComplete="email"
@@ -184,6 +185,7 @@ const Auth = () => {
                 <div className="relative">
                   <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
+                  placeholder="Insira sua senha"
                     id="login-password"
                     type="password"
                     autoComplete="current-password"
@@ -212,6 +214,7 @@ const Auth = () => {
               <div className="space-y-2">
                 <Label htmlFor="reg-email">E-mail</Label>
                 <Input
+                placeholder="Insira seu E-mail"
                   id="reg-email"
                   type="email"
                   autoComplete="email"
@@ -224,6 +227,7 @@ const Auth = () => {
               <div className="space-y-2">
                 <Label htmlFor="reg-password">Senha (mín. 8 caracteres)</Label>
                 <Input
+                placeholder="Insira sua senha"
                   id="reg-password"
                   type="password"
                   autoComplete="new-password"
@@ -242,7 +246,6 @@ const Auth = () => {
                 />
                 <Label htmlFor="lgpd" className="text-xs leading-tight font-normal text-muted-foreground">
                   Concordo com o tratamento dos meus dados pessoais conforme a LGPD.
-                  Você pode solicitar a exclusão a qualquer momento.
                 </Label>
               </div>
               <Button type="submit" className="w-full rounded-xl" disabled={submitting}>
