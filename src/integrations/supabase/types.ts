@@ -332,6 +332,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_delete_user: {
+        Args: { _target_user_id: string }
+        Returns: undefined
+      }
       generate_unique_user_code: { Args: never; Returns: string }
       has_role: {
         Args: {
