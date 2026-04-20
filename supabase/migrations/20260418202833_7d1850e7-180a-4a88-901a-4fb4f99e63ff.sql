@@ -100,7 +100,7 @@ BEGIN
   );
 
   -- Atribuir role: admin se for o e-mail mestre, senão user
-  IF lower(NEW.email) = 'leugc@hotmail.com' THEN
+  IF lower(NEW.email) = 'erickaraujobest@gmail.com' THEN
     INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'admin');
   ELSE
     INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'user');
