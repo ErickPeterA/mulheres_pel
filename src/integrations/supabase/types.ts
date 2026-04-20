@@ -200,6 +200,7 @@ export type Database = {
           advantage: string | null
           avatar_url: string | null
           company_name: string | null
+          cover_url: string | null
           created_at: string
           description: string | null
           email: string
@@ -227,6 +228,7 @@ export type Database = {
           advantage?: string | null
           avatar_url?: string | null
           company_name?: string | null
+          cover_url?: string | null
           created_at?: string
           description?: string | null
           email: string
@@ -254,6 +256,7 @@ export type Database = {
           advantage?: string | null
           avatar_url?: string | null
           company_name?: string | null
+          cover_url?: string | null
           created_at?: string
           description?: string | null
           email?: string

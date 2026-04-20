@@ -45,9 +45,11 @@ const MyProfile = () => {
     services: [] as string[],
   });
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [coverUrl, setCoverUrl] = useState<string | null>(null);
   const [userCode, setUserCode] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [copied, setCopied] = useState(false);
   const [newSpecialty, setNewSpecialty] = useState("");
   const [newService, setNewService] = useState("");
@@ -101,6 +103,7 @@ const MyProfile = () => {
         services: profile.services || [],
       });
       setPhotoUrl(profile.photo_url || profile.avatar_url || null);
+      setCoverUrl((profile as any).cover_url || null);
       setUserCode(profile.user_code || "");
     }
   }, [profile]);
@@ -132,6 +135,28 @@ const MyProfile = () => {
     setPhotoUrl(urlData.publicUrl);
     setUploading(false);
     toast({ title: "Foto carregada!" });
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Imagem muito grande (máx 5MB)", variant: "destructive" });
+      return;
+    }
+    setUploadingCover(true);
+    const ext = file.name.split(".").pop();
+    const path = `${user.id}/cover-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("user-photos").upload(path, file, { upsert: true });
+    if (upErr) {
+      setUploadingCover(false);
+      toast({ title: "Erro no upload", description: upErr.message, variant: "destructive" });
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("user-photos").getPublicUrl(path);
+    setCoverUrl(urlData.publicUrl);
+    setUploadingCover(false);
+    toast({ title: "Capa carregada!" });
   };
 
   const handlePortfolioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -198,6 +223,7 @@ const MyProfile = () => {
         specialties: form.specialties,
         services: form.services,
         photo_url: photoUrl,
+        cover_url: coverUrl,
         profile_completed: true,
         lgpd_consent: true,
         lgpd_consent_at: profile?.lgpd_consent_at || new Date().toISOString(),
@@ -263,21 +289,34 @@ const MyProfile = () => {
           </button>
         )}
 
-        {/* Foto principal */}
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-24 h-24 rounded-2xl bg-secondary overflow-hidden">
-            {photoUrl ? (
-              <img src={photoUrl} alt="Foto" className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-primary/40">
-                {form.full_name.charAt(0).toUpperCase() || "?"}
-              </div>
+        {/* Capa + Foto principal (estilo LinkedIn) */}
+        <div className="relative">
+          <div className="relative w-full aspect-[3/1] rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 overflow-hidden">
+            {coverUrl && (
+              <img src={coverUrl} alt="Capa" className="w-full h-full object-cover" />
             )}
+            <label className="absolute top-2 right-2 cursor-pointer bg-black/60 text-white text-[11px] px-2.5 py-1 rounded-full flex items-center gap-1 hover:bg-black/80 transition-colors">
+              <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} disabled={uploadingCover} />
+              <Upload size={11} /> {uploadingCover ? "Enviando..." : coverUrl ? "Trocar capa" : "Adicionar capa"}
+            </label>
           </div>
+          <div className="absolute -bottom-10 left-4">
+            <div className="w-24 h-24 rounded-full bg-secondary overflow-hidden ring-4 ring-background shadow-lg">
+              {photoUrl ? (
+                <img src={photoUrl} alt="Foto" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-primary/40">
+                  {form.full_name.charAt(0).toUpperCase() || "?"}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="pt-12 flex justify-end">
           <label className="cursor-pointer">
             <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={uploading} />
             <span className="text-xs text-primary hover:underline flex items-center gap-1">
-              <Upload size={12} /> {uploading ? "Enviando..." : "Trocar foto"}
+              <Upload size={12} /> {uploading ? "Enviando..." : "Trocar foto de perfil"}
             </span>
           </label>
         </div>
