@@ -329,7 +329,78 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      profiles_public: {
+        Row: {
+          advantage: string | null
+          avatar_url: string | null
+          company_name: string | null
+          cover_url: string | null
+          created_at: string | null
+          description: string | null
+          full_name: string | null
+          id: string | null
+          instagram: string | null
+          location: string | null
+          logo_url: string | null
+          owner_name: string | null
+          photo_url: string | null
+          profile_completed: boolean | null
+          segment: string | null
+          services: string[] | null
+          specialties: string[] | null
+          updated_at: string | null
+          user_id: string | null
+          whatsapp: string | null
+          working_hours: string | null
+        }
+        Insert: {
+          advantage?: string | null
+          avatar_url?: string | null
+          company_name?: string | null
+          cover_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          full_name?: string | null
+          id?: string | null
+          instagram?: string | null
+          location?: string | null
+          logo_url?: string | null
+          owner_name?: string | null
+          photo_url?: string | null
+          profile_completed?: boolean | null
+          segment?: string | null
+          services?: string[] | null
+          specialties?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+          whatsapp?: string | null
+          working_hours?: string | null
+        }
+        Update: {
+          advantage?: string | null
+          avatar_url?: string | null
+          company_name?: string | null
+          cover_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          full_name?: string | null
+          id?: string | null
+          instagram?: string | null
+          location?: string | null
+          logo_url?: string | null
+          owner_name?: string | null
+          photo_url?: string | null
+          profile_completed?: boolean | null
+          segment?: string | null
+          services?: string[] | null
+          specialties?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+          whatsapp?: string | null
+          working_hours?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_delete_user: {
