@@ -1,8 +1,9 @@
 import { Bell, LogIn, LogOut, Shield, User, UserCircle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import NotificationsPanel from "./NotificationsPanel";
+import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,10 +13,43 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+const STORAGE_KEY = "notifications:lastSeenAt";
+
 const Header = () => {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [hasUnread, setHasUnread] = useState(false);
   const { user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
+
+  const checkUnread = async () => {
+    const lastSeen = localStorage.getItem(STORAGE_KEY) ?? "1970-01-01T00:00:00.000Z";
+    const { count } = await supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .gt("created_at", lastSeen);
+    setHasUnread((count ?? 0) > 0);
+  };
+
+  useEffect(() => {
+    checkUnread();
+    const channel = supabase
+      .channel("notifications-header")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications" },
+        () => setHasUnread(true)
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const handleOpenNotifications = () => {
+    setShowNotifications(true);
+    localStorage.setItem(STORAGE_KEY, new Date().toISOString());
+    setHasUnread(false);
+  };
 
   return (
     <>
@@ -27,12 +61,16 @@ const Header = () => {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setShowNotifications(true)}
+            onClick={handleOpenNotifications}
             className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center transition-colors hover:bg-accent"
             aria-label="Notificações"
           >
             <Bell size={20} className="text-secondary-foreground" />
-            <NotificationBadge />
+            {hasUnread && (
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+                !
+              </span>
+            )}
           </button>
 
           {user ? (
@@ -73,14 +111,6 @@ const Header = () => {
         onClose={() => setShowNotifications(false)}
       />
     </>
-  );
-};
-
-const NotificationBadge = () => {
-  return (
-    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
-      !
-    </span>
   );
 };
 
