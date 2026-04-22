@@ -102,23 +102,6 @@ const Auth = () => {
     setTab("login");
   };
 
-  const handleGoogle = async () => {
-    setSubmitting(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      setSubmitting(false);
-      toast({
-        title: "Erro com Google",
-        description: result.error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-    if (result.redirected) return;
-    navigate("/", { replace: true });
-  };
 
   const handleForgot = async () => {
     if (!loginEmail) {
