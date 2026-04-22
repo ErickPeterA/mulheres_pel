@@ -22,16 +22,16 @@ const Index = () => {
     queryKey: ["users-public"],
     queryFn: async () => {
       const [{ data: profiles, error }, { data: adminRoles }] = await Promise.all([
-        supabase
-          .from("profiles")
-          .select("id, user_id, user_code, full_name, company_name, owner_name, segment, specialties, description, location, photo_url, avatar_url")
+        (supabase as any)
+          .from("profiles_public")
+          .select("id, user_id, full_name, company_name, owner_name, segment, specialties, description, location, photo_url, avatar_url")
           .eq("profile_completed", true)
           .order("created_at", { ascending: false }),
         supabase.from("user_roles").select("user_id").eq("role", "admin"),
       ]);
       if (error) throw error;
       const adminIds = new Set((adminRoles ?? []).map((r) => r.user_id));
-      return (profiles ?? []).filter((p) => !adminIds.has(p.user_id));
+      return ((profiles ?? []) as any[]).filter((p) => !adminIds.has(p.user_id));
     },
     enabled: !!user,
   });
@@ -44,8 +44,7 @@ const Index = () => {
         (p.segment || "").toLowerCase().includes(q) ||
         (p.company_name || "").toLowerCase().includes(q) ||
         (p.full_name || "").toLowerCase().includes(q) ||
-        (p.user_code || "").toLowerCase().includes(q) ||
-        (p.specialties || []).some((s) => s.toLowerCase().includes(q))
+        (p.specialties || []).some((s: string) => s.toLowerCase().includes(q))
     );
   }, [professionals, search]);
 
@@ -89,7 +88,7 @@ const Index = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => pro.user_code && navigate(`/perfil/${pro.user_code}`)}
+                  onClick={() => navigate(`/perfil/u/${pro.user_id}`)}
                   className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                   {...(idx === 0 ? { "data-professional-card": true } : {})}
                 >
