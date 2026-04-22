@@ -1,31 +1,33 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import MobileLayout from "@/components/MobileLayout";
 import Header from "@/components/Header";
 import SearchBar from "@/components/SearchBar";
 import EventCarousel from "@/components/EventCarousel";
-import ProfessionalCard from "@/components/ProfessionalCard";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { Loader2, MapPin } from "lucide-react";
 
 const Index = () => {
   const [search, setSearch] = useState("");
   const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
 
   const { data: professionals = [], isLoading } = useQuery({
-    queryKey: ["professionals"],
+    queryKey: ["users-public"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("professionals")
-        .select("*")
-        .eq("is_active", true)
-        .order("company_name");
+        .from("profiles")
+        .select("id, user_id, user_code, full_name, company_name, owner_name, segment, specialties, description, location, photo_url, avatar_url")
+        .eq("profile_completed", true)
+        .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
     enabled: !!user,
   });
@@ -35,8 +37,10 @@ const Index = () => {
     const q = search.toLowerCase().trim();
     return professionals.filter(
       (p) =>
-        p.segment.toLowerCase().includes(q) ||
-        p.company_name.toLowerCase().includes(q) ||
+        (p.segment || "").toLowerCase().includes(q) ||
+        (p.company_name || "").toLowerCase().includes(q) ||
+        (p.full_name || "").toLowerCase().includes(q) ||
+        (p.user_code || "").toLowerCase().includes(q) ||
         (p.specialties || []).some((s) => s.toLowerCase().includes(q))
     );
   }, [professionals, search]);
