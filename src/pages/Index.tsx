@@ -80,9 +80,74 @@ const Index = () => {
             </h2>
             <div className="space-y-3">
               {filteredPros.map((pro, idx) => (
-                <div key={pro.id} {...(idx === 0 ? { "data-professional-card": true } : {})}>
-                  <ProfessionalCard professional={pro} />
-                </div>
+                <motion.div
+                  key={pro.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => pro.user_code && navigate(`/perfil/${pro.user_code}`)}
+                  className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  {...(idx === 0 ? { "data-professional-card": true } : {})}
+                >
+                  <div className="flex gap-3 p-3">
+                    <div className="w-20 h-20 rounded-xl bg-secondary overflow-hidden flex-shrink-0">
+                      {(pro.photo_url || pro.avatar_url) ? (
+                        <img
+                          src={pro.photo_url || pro.avatar_url || ""}
+                          alt={pro.company_name || pro.full_name || ""}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-primary/40">
+                          {(pro.company_name || pro.full_name || "?").charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-foreground text-sm truncate">
+                        {pro.company_name || pro.full_name}
+                      </h3>
+                      {pro.company_name && pro.full_name && (
+                        <p className="text-xs text-muted-foreground truncate">{pro.full_name}</p>
+                      )}
+                      {pro.segment && (
+                        <Badge className="mt-1.5 bg-primary/10 text-primary border-0 text-[11px] font-semibold hover:bg-primary/20">
+                          {pro.segment}
+                        </Badge>
+                      )}
+                      {pro.location && (
+                        <div className="flex items-center gap-1 mt-1.5 text-muted-foreground">
+                          <MapPin size={11} />
+                          <span className="text-[11px] truncate">{pro.location}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {pro.specialties && pro.specialties.length > 0 && (
+                    <div className="px-3 pb-3 flex flex-wrap gap-1.5">
+                      {pro.specialties.slice(0, 4).map((spec) => (
+                        <span
+                          key={spec}
+                          className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground font-medium"
+                        >
+                          {spec}
+                        </span>
+                      ))}
+                      {pro.specialties.length > 4 && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          +{pro.specialties.length - 4}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {pro.description && (
+                    <div className="px-3 pb-3">
+                      <p className="text-xs text-muted-foreground line-clamp-2">{pro.description}</p>
+                    </div>
+                  )}
+                </motion.div>
               ))}
             </div>
           </section>
