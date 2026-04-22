@@ -152,9 +152,9 @@ const UserProfile = () => {
               {profile.segment}
             </Badge>
           )}
-          {profile.user_code && (
+          {isOwn && (profile as any).user_code && (
             <span className="inline-flex items-center gap-1 mt-2 text-xs font-mono text-muted-foreground bg-secondary px-2 py-0.5 rounded">
-              <Hash size={11} /> {profile.user_code}
+              <Hash size={11} /> {(profile as any).user_code}
             </span>
           )}
 
