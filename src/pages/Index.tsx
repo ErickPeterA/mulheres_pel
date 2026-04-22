@@ -88,7 +88,7 @@ const Index = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => pro.user_code && navigate(`/perfil/${pro.user_code}`)}
+                  onClick={() => navigate(`/perfil/u/${pro.user_id}`)}
                   className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                   {...(idx === 0 ? { "data-professional-card": true } : {})}
                 >
