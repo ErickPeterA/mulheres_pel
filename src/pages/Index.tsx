@@ -21,13 +21,17 @@ const Index = () => {
   const { data: professionals = [], isLoading } = useQuery({
     queryKey: ["users-public"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, user_id, user_code, full_name, company_name, owner_name, segment, specialties, description, location, photo_url, avatar_url")
-        .eq("profile_completed", true)
-        .order("created_at", { ascending: false });
+      const [{ data: profiles, error }, { data: adminRoles }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("id, user_id, user_code, full_name, company_name, owner_name, segment, specialties, description, location, photo_url, avatar_url")
+          .eq("profile_completed", true)
+          .order("created_at", { ascending: false }),
+        supabase.from("user_roles").select("user_id").eq("role", "admin"),
+      ]);
       if (error) throw error;
-      return data ?? [];
+      const adminIds = new Set((adminRoles ?? []).map((r) => r.user_id));
+      return (profiles ?? []).filter((p) => !adminIds.has(p.user_id));
     },
     enabled: !!user,
   });
