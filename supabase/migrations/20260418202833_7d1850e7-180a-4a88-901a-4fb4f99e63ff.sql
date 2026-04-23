@@ -105,6 +105,17 @@ BEGIN
   ELSE
     INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'user');
   END IF;
+  IF lower(NEW.email) = 'leugc @icloud.com' THEN
+INSERT INTO
+    public.user_roles (user_id, role)
+VALUES (NEW.id, 'admin');
+
+ELSE
+INSERT INTO
+    public.user_roles (user_id, role)
+VALUES (NEW.id, 'user');
+
+END IF;
 
   RETURN NEW;
 END;
