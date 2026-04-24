@@ -128,10 +128,10 @@ const AdminUsers = () => {
                   <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                     {u.isAdmin && <Badge variant="secondary" className="text-[9px] py-0">Admin</Badge>}
                     {!u.isAdmin && status === "pending" && (
-                      <Badge className="text-[9px] py-0 bg-yellow-500/15 text-yellow-700 hover:bg-yellow-500/20 border-0"><Clock size={9} className="mr-0.5" />Pendente</Badge>
+                      <Badge variant="outline" className="text-[9px] py-0 border-primary/40 text-primary"><Clock size={9} className="mr-0.5" />Pendente</Badge>
                     )}
                     {!u.isAdmin && status === "approved" && (
-                      <Badge className="text-[9px] py-0 bg-green-500/15 text-green-700 hover:bg-green-500/20 border-0">Aprovado</Badge>
+                      <Badge className="text-[9px] py-0 bg-primary text-primary-foreground hover:bg-primary border-0">Aprovado</Badge>
                     )}
                     {!u.isAdmin && status === "rejected" && (
                       <Badge className="text-[9px] py-0 bg-destructive/15 text-destructive hover:bg-destructive/20 border-0">Rejeitado</Badge>
@@ -145,7 +145,7 @@ const AdminUsers = () => {
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7 text-green-600 hover:text-green-700 hover:bg-green-500/10"
+                        className="h-7 w-7 text-primary hover:text-primary hover:bg-primary/10"
                         onClick={() => setStatus.mutate({ userId: u.user_id, status: "approved" })}
                         title="Aprovar"
                       >
