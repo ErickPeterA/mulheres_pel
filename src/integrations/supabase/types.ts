@@ -198,6 +198,7 @@ export type Database = {
       profiles: {
         Row: {
           advantage: string | null
+          approval_status: Database["public"]["Enums"]["approval_status"]
           avatar_url: string | null
           company_name: string | null
           cover_url: string | null
@@ -226,6 +227,7 @@ export type Database = {
         }
         Insert: {
           advantage?: string | null
+          approval_status?: Database["public"]["Enums"]["approval_status"]
           avatar_url?: string | null
           company_name?: string | null
           cover_url?: string | null
@@ -254,6 +256,7 @@ export type Database = {
         }
         Update: {
           advantage?: string | null
+          approval_status?: Database["public"]["Enums"]["approval_status"]
           avatar_url?: string | null
           company_name?: string | null
           cover_url?: string | null
@@ -332,6 +335,7 @@ export type Database = {
       profiles_public: {
         Row: {
           advantage: string | null
+          approval_status: Database["public"]["Enums"]["approval_status"] | null
           avatar_url: string | null
           company_name: string | null
           cover_url: string | null
@@ -355,6 +359,9 @@ export type Database = {
         }
         Insert: {
           advantage?: string | null
+          approval_status?:
+            | Database["public"]["Enums"]["approval_status"]
+            | null
           avatar_url?: string | null
           company_name?: string | null
           cover_url?: string | null
@@ -378,6 +385,9 @@ export type Database = {
         }
         Update: {
           advantage?: string | null
+          approval_status?:
+            | Database["public"]["Enums"]["approval_status"]
+            | null
           avatar_url?: string | null
           company_name?: string | null
           cover_url?: string | null
@@ -407,6 +417,13 @@ export type Database = {
         Args: { _target_user_id: string }
         Returns: undefined
       }
+      admin_set_user_status: {
+        Args: {
+          _status: Database["public"]["Enums"]["approval_status"]
+          _target_user_id: string
+        }
+        Returns: undefined
+      }
       generate_unique_user_code: { Args: never; Returns: string }
       has_role: {
         Args: {
@@ -418,6 +435,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      approval_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -546,6 +564,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      approval_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
