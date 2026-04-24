@@ -8,7 +8,7 @@ type Props = {
 };
 
 const ProtectedRoute = ({ children, requireAdmin = false }: Props) => {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isAdmin, loading, approvalStatus } = useAuth();
 
   if (loading) {
     return (
@@ -20,6 +20,11 @@ const ProtectedRoute = ({ children, requireAdmin = false }: Props) => {
 
   if (!user) return <Navigate to="/auth" replace />;
   if (requireAdmin && !isAdmin) return <Navigate to="/" replace />;
+
+  // Bloqueia acesso de usuários não aprovados (exceto admins)
+  if (!isAdmin && approvalStatus !== "approved") {
+    return <Navigate to="/aguardando-aprovacao" replace />;
+  }
 
   return <>{children}</>;
 };
