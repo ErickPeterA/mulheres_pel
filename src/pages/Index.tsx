@@ -1,31 +1,37 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import MobileLayout from "@/components/MobileLayout";
 import Header from "@/components/Header";
 import SearchBar from "@/components/SearchBar";
 import EventCarousel from "@/components/EventCarousel";
-import ProfessionalCard from "@/components/ProfessionalCard";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { Loader2, MapPin } from "lucide-react";
 
 const Index = () => {
   const [search, setSearch] = useState("");
   const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
 
   const { data: professionals = [], isLoading } = useQuery({
-    queryKey: ["professionals"],
+    queryKey: ["users-public"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("professionals")
-        .select("*")
-        .eq("is_active", true)
-        .order("company_name");
+      const [{ data: profiles, error }, { data: adminRoles }] = await Promise.all([
+        (supabase as any)
+          .from("profiles_public")
+          .select("id, user_id, full_name, company_name, owner_name, segment, specialties, description, location, photo_url, avatar_url")
+          .eq("profile_completed", true)
+          .order("created_at", { ascending: false }),
+        supabase.from("user_roles").select("user_id").eq("role", "admin"),
+      ]);
       if (error) throw error;
-      return data;
+      const adminIds = new Set((adminRoles ?? []).map((r) => r.user_id));
+      return ((profiles ?? []) as any[]).filter((p) => !adminIds.has(p.user_id));
     },
     enabled: !!user,
   });
@@ -35,9 +41,10 @@ const Index = () => {
     const q = search.toLowerCase().trim();
     return professionals.filter(
       (p) =>
-        p.segment.toLowerCase().includes(q) ||
-        p.company_name.toLowerCase().includes(q) ||
-        (p.specialties || []).some((s) => s.toLowerCase().includes(q))
+        (p.segment || "").toLowerCase().includes(q) ||
+        (p.company_name || "").toLowerCase().includes(q) ||
+        (p.full_name || "").toLowerCase().includes(q) ||
+        (p.specialties || []).some((s: string) => s.toLowerCase().includes(q))
     );
   }, [professionals, search]);
 
@@ -76,9 +83,74 @@ const Index = () => {
             </h2>
             <div className="space-y-3">
               {filteredPros.map((pro, idx) => (
-                <div key={pro.id} {...(idx === 0 ? { "data-professional-card": true } : {})}>
-                  <ProfessionalCard professional={pro} />
-                </div>
+                <motion.div
+                  key={pro.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigate(`/perfil/u/${pro.user_id}`)}
+                  className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  {...(idx === 0 ? { "data-professional-card": true } : {})}
+                >
+                  <div className="flex gap-3 p-3">
+                    <div className="w-20 h-20 rounded-xl bg-secondary overflow-hidden flex-shrink-0">
+                      {(pro.photo_url || pro.avatar_url) ? (
+                        <img
+                          src={pro.photo_url || pro.avatar_url || ""}
+                          alt={pro.company_name || pro.full_name || ""}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-primary/40">
+                          {(pro.company_name || pro.full_name || "?").charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-foreground text-sm truncate">
+                        {pro.company_name || pro.full_name}
+                      </h3>
+                      {pro.company_name && pro.full_name && (
+                        <p className="text-xs text-muted-foreground truncate">{pro.full_name}</p>
+                      )}
+                      {pro.segment && (
+                        <Badge className="mt-1.5 bg-primary/10 text-primary border-0 text-[11px] font-semibold hover:bg-primary/20">
+                          {pro.segment}
+                        </Badge>
+                      )}
+                      {pro.location && (
+                        <div className="flex items-center gap-1 mt-1.5 text-muted-foreground">
+                          <MapPin size={11} />
+                          <span className="text-[11px] truncate">{pro.location}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {pro.specialties && pro.specialties.length > 0 && (
+                    <div className="px-3 pb-3 flex flex-wrap gap-1.5">
+                      {pro.specialties.slice(0, 4).map((spec) => (
+                        <span
+                          key={spec}
+                          className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground font-medium"
+                        >
+                          {spec}
+                        </span>
+                      ))}
+                      {pro.specialties.length > 4 && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          +{pro.specialties.length - 4}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {pro.description && (
+                    <div className="px-3 pb-3">
+                      <p className="text-xs text-muted-foreground line-clamp-2">{pro.description}</p>
+                    </div>
+                  )}
+                </motion.div>
               ))}
             </div>
           </section>

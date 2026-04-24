@@ -14,15 +14,26 @@ import { motion } from "framer-motion";
 import ImageLightbox from "@/components/ImageLightbox";
 
 const UserProfile = () => {
-  const { code } = useParams();
+  const { code, userId } = useParams();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const { data: profile, isLoading } = useQuery({
-    queryKey: ["public-profile", code],
+    queryKey: ["public-profile", code ?? userId],
     queryFn: async () => {
+      // Acesso por user_id (catálogo público): usar view sem dados sensíveis
+      if (userId) {
+        const { data, error } = await (supabase as any)
+          .from("profiles_public")
+          .select("*")
+          .eq("user_id", userId)
+          .maybeSingle();
+        if (error) throw error;
+        return data;
+      }
+      // Acesso por código único: só funciona para o próprio dono ou admin (RLS bloqueia outros)
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -31,7 +42,7 @@ const UserProfile = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!code && !!user,
+    enabled: (!!code || !!userId) && !!user,
   });
 
   const { data: photos = [] } = useQuery({
@@ -141,9 +152,9 @@ const UserProfile = () => {
               {profile.segment}
             </Badge>
           )}
-          {profile.user_code && (
+          {isOwn && (profile as any).user_code && (
             <span className="inline-flex items-center gap-1 mt-2 text-xs font-mono text-muted-foreground bg-secondary px-2 py-0.5 rounded">
-              <Hash size={11} /> {profile.user_code}
+              <Hash size={11} /> {(profile as any).user_code}
             </span>
           )}
 
