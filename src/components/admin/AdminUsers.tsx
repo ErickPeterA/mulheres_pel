@@ -52,6 +52,7 @@ const AdminUsers = () => {
       const label = vars.status === "approved" ? "aprovado" : vars.status === "rejected" ? "rejeitado" : "marcado como pendente";
       toast.success(`Usuário ${label}`);
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      queryClient.invalidateQueries({ queryKey: ["users-public"] });
     },
     onError: (err: Error) => toast.error(err.message ?? "Erro ao atualizar status"),
   });
