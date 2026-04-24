@@ -34,6 +34,8 @@ const Index = () => {
       return ((profiles ?? []) as any[]).filter((p) => !adminIds.has(p.user_id));
     },
     enabled: !!user,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
 
   const filteredPros = useMemo(() => {
