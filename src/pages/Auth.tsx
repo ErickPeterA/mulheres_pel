@@ -48,20 +48,41 @@ const Auth = () => {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({
       email: loginEmail.trim(),
       password: loginPassword,
     });
-    setSubmitting(false);
     if (error) {
+      setSubmitting(false);
       const msg = error.message.includes("Invalid login")
         ? "E-mail ou senha incorretos"
-        : error.message.includes("Email not confirmed")
-        ? "Confirme seu e-mail antes de entrar"
         : error.message;
       toast({ title: "Erro ao entrar", description: msg, variant: "destructive" });
       return;
     }
+
+    // Verifica status de aprovação
+    const uid = signInData.user?.id;
+    if (uid) {
+      const [{ data: roleRow }, { data: prof }] = await Promise.all([
+        supabase.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle(),
+        (supabase as any).from("profiles").select("approval_status").eq("user_id", uid).maybeSingle(),
+      ]);
+      const isAdminUser = !!roleRow;
+      const status = prof?.approval_status as "pending" | "approved" | "rejected" | undefined;
+
+      if (!isAdminUser && status !== "approved") {
+        setSubmitting(false);
+        const msg = status === "rejected"
+          ? "Seu cadastro foi rejeitado pelo administrador."
+          : "Seu cadastro está aguardando aprovação do administrador.";
+        toast({ title: "Acesso bloqueado", description: msg, variant: "destructive" });
+        await supabase.auth.signOut();
+        return;
+      }
+    }
+
+    setSubmitting(false);
     toast({ title: "Bem-vinda de volta!" });
     navigate("/", { replace: true });
   };
@@ -86,6 +107,8 @@ const Auth = () => {
         data: { lgpd_consent: true },
       },
     });
+    // Garante que não fique uma sessão ativa (usuário precisa aprovação)
+    await supabase.auth.signOut();
     setSubmitting(false);
     if (error) {
       const msg = error.message.includes("already registered")
@@ -94,11 +117,13 @@ const Auth = () => {
       toast({ title: "Erro ao registrar", description: msg, variant: "destructive" });
       return;
     }
-    // Marca consentimento LGPD após criação (será aplicado na próxima sessão)
     toast({
       title: "Cadastro realizado!",
-      description: "Verifique seu e-mail para confirmar a conta.",
+      description: "Aguarde a aprovação do administrador para acessar a plataforma.",
     });
+    setRegEmail("");
+    setRegPassword("");
+    setLgpdConsent(false);
     setTab("login");
   };
 

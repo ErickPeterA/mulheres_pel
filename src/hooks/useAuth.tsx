@@ -2,12 +2,15 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
+export type ApprovalStatus = "pending" | "approved" | "rejected";
+
 type AuthContextType = {
   user: User | null;
   session: Session | null;
   loading: boolean;
   isAdmin: boolean;
   profileCompleted: boolean;
+  approvalStatus: ApprovalStatus | null;
   refreshProfile: () => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -20,15 +23,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [profileCompleted, setProfileCompleted] = useState(true);
+  const [approvalStatus, setApprovalStatus] = useState<ApprovalStatus | null>(null);
 
   const fetchUserMeta = async (uid: string) => {
-    // Defer heavy queries to avoid deadlock inside auth callback
     const [{ data: roleData }, { data: profileData }] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle(),
-      supabase.from("profiles").select("profile_completed").eq("user_id", uid).maybeSingle(),
+      (supabase as any).from("profiles").select("profile_completed, approval_status").eq("user_id", uid).maybeSingle(),
     ]);
     setIsAdmin(!!roleData);
     setProfileCompleted(profileData?.profile_completed ?? false);
+    setApprovalStatus((profileData?.approval_status as ApprovalStatus) ?? null);
   };
 
   const refreshProfile = async () => {
@@ -36,7 +40,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    // 1. Setup listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
       setUser(newSession?.user ?? null);
@@ -45,10 +48,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setIsAdmin(false);
         setProfileCompleted(true);
+        setApprovalStatus(null);
       }
     });
 
-    // 2. THEN check existing session
     supabase.auth.getSession().then(({ data: { session: existing } }) => {
       setSession(existing);
       setUser(existing?.user ?? null);
@@ -67,7 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, isAdmin, profileCompleted, refreshProfile, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, isAdmin, profileCompleted, approvalStatus, refreshProfile, signOut }}>
       {children}
     </AuthContext.Provider>
   );
