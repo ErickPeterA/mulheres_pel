@@ -417,6 +417,21 @@ export type Database = {
         Args: { _target_user_id: string }
         Returns: undefined
       }
+      admin_list_users: {
+        Args: never
+        Returns: {
+          approval_status: Database["public"]["Enums"]["approval_status"]
+          avatar_url: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_admin: boolean
+          profile_completed: boolean
+          user_code: string
+          user_id: string
+        }[]
+      }
       admin_set_user_status: {
         Args: {
           _status: Database["public"]["Enums"]["approval_status"]
@@ -424,6 +439,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      find_user_id_by_code: { Args: { _code: string }; Returns: string }
       generate_unique_user_code: { Args: never; Returns: string }
       has_role: {
         Args: {
