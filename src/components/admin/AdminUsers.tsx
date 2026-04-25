@@ -16,7 +16,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Trash2, User as UserIcon, Check, X, Clock } from "lucide-react";
+import { Loader2, Trash2, User as UserIcon, Check, X, Clock, Hash, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -30,15 +30,16 @@ const AdminUsers = () => {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
-      const [{ data: profiles, error }, { data: roles }] = await Promise.all([
-        (supabase as any).from("profiles").select("*").order("created_at", { ascending: false }),
-        supabase.from("user_roles").select("user_id, role"),
-      ]);
+      const { data, error } = await (supabase as any).rpc("admin_list_users");
       if (error) throw error;
-      const adminIds = new Set((roles ?? []).filter((r) => r.role === "admin").map((r) => r.user_id));
-      return ((profiles ?? []) as any[]).map((p) => ({ ...p, isAdmin: adminIds.has(p.user_id) }));
+      return ((data ?? []) as any[]).map((p) => ({ ...p, isAdmin: p.is_admin }));
     },
   });
+
+  const copyCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    toast.success(`Código ${code} copiado`);
+  };
 
   const setStatus = useMutation({
     mutationFn: async ({ userId, status }: { userId: string; status: "approved" | "rejected" | "pending" }) => {
