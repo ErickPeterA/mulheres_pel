@@ -127,6 +127,17 @@ const AdminUsers = () => {
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm truncate">{u.full_name ?? "Sem nome"}</p>
                   <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+                  {u.user_code && (
+                    <button
+                      onClick={() => copyCode(u.user_code)}
+                      className="inline-flex items-center gap-1 mt-1 text-[10px] font-mono bg-primary/10 text-primary px-1.5 py-0.5 rounded hover:bg-primary/20 transition-colors"
+                      title="Copiar código"
+                    >
+                      <Hash size={9} />
+                      {u.user_code}
+                      <Copy size={9} />
+                    </button>
+                  )}
                   <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                     {u.isAdmin && <Badge variant="secondary" className="text-[9px] py-0">Admin</Badge>}
                     {!u.isAdmin && status === "pending" && (
