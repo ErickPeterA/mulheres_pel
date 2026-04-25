@@ -102,6 +102,14 @@ const Index = () => {
               <Skeleton key={i} className="h-32 rounded-2xl" />
             ))}
           </div>
+        ) : isCodeSearch ? (
+          <div className="text-center py-12 text-muted-foreground">
+            <Hash className="mx-auto mb-2 text-primary" size={28} />
+            <p className="text-sm flex items-center justify-center gap-2">
+              {isSearchingCode && <Loader2 className="animate-spin" size={14} />}
+              Buscando código <span className="font-mono font-semibold">{trimmedSearch}</span>...
+            </p>
+          </div>
         ) : filteredPros.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <p className="text-sm">
