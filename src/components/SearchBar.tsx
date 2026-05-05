@@ -12,7 +12,7 @@ const SearchBar = ({ value, onChange }: SearchBarProps) => {
         <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
-          placeholder="Buscar por nome, segmento ou código..."
+          placeholder="Buscar por nome, segmento ou código (6 dígitos)"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="w-full h-11 pl-10 pr-10 rounded-xl bg-secondary border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"

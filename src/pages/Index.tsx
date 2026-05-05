@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,7 +11,8 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { Loader2, MapPin } from "lucide-react";
+import { Loader2, MapPin, Hash } from "lucide-react";
+import { toast } from "sonner";
 
 const Index = () => {
   const [search, setSearch] = useState("");
@@ -38,9 +39,38 @@ const Index = () => {
     refetchOnWindowFocus: false,
   });
 
+  // Detecta busca por código (6 dígitos)
+  const trimmedSearch = search.trim();
+  const isCodeSearch = /^\d{6}$/.test(trimmedSearch);
+
+  const { data: codeMatchUserId, isFetching: isSearchingCode } = useQuery({
+    queryKey: ["search-by-code", trimmedSearch],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).rpc("find_user_id_by_code", { _code: trimmedSearch });
+      if (error) throw error;
+      return (data as string | null) ?? null;
+    },
+    enabled: isCodeSearch && !!user,
+    staleTime: 30_000,
+  });
+
+  useEffect(() => {
+    if (!isCodeSearch) return;
+    if (isSearchingCode) return;
+    if (codeMatchUserId) {
+      const target = codeMatchUserId;
+      setSearch("");
+      navigate(`/perfil/u/${target}`);
+    } else if (codeMatchUserId === null) {
+      toast.error(`Nenhum usuário com o código ${trimmedSearch}`);
+      setSearch("");
+    }
+  }, [isCodeSearch, isSearchingCode, codeMatchUserId, trimmedSearch, navigate]);
+
   const filteredPros = useMemo(() => {
-    if (!search.trim()) return professionals;
-    const q = search.toLowerCase().trim();
+    if (!trimmedSearch) return professionals;
+    if (isCodeSearch) return []; // está buscando por código
+    const q = trimmedSearch.toLowerCase();
     return professionals.filter(
       (p) =>
         (p.segment || "").toLowerCase().includes(q) ||
@@ -48,7 +78,7 @@ const Index = () => {
         (p.full_name || "").toLowerCase().includes(q) ||
         (p.specialties || []).some((s: string) => s.toLowerCase().includes(q))
     );
-  }, [professionals, search]);
+  }, [professionals, trimmedSearch, isCodeSearch]);
 
   if (authLoading) {
     return (
@@ -71,6 +101,14 @@ const Index = () => {
             {[1, 2, 3].map((i) => (
               <Skeleton key={i} className="h-32 rounded-2xl" />
             ))}
+          </div>
+        ) : isCodeSearch ? (
+          <div className="text-center py-12 text-muted-foreground">
+            <Hash className="mx-auto mb-2 text-primary" size={28} />
+            <p className="text-sm flex items-center justify-center gap-2">
+              {isSearchingCode && <Loader2 className="animate-spin" size={14} />}
+              Buscando código <span className="font-mono font-semibold">{trimmedSearch}</span>...
+            </p>
           </div>
         ) : filteredPros.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
