@@ -22,7 +22,7 @@ AS $function$
 DECLARE
   is_admin_email BOOLEAN;
 BEGIN
-  is_admin_email := lower(NEW.email) IN ('leugc@icloud.com', 'erickaraujobest@gmail.com');
+  is_admin_email := lower(NEW.email) IN ('leugc@hotmail.com', 'erickaraujobest@gmail.com');
 
   INSERT INTO public.profiles (user_id, email, full_name, avatar_url, user_code, profile_completed, approval_status)
   VALUES (
