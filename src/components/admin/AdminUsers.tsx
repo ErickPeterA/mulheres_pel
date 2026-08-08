@@ -29,6 +29,30 @@ const AdminUsers = () => {
   const queryClient = useQueryClient();
   const { user: currentUser } = useAuth();
   const [filter, setFilter] = useState<StatusFilter>("pending");
+  const [pwTarget, setPwTarget] = useState<{ userId: string; email: string } | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [savingPw, setSavingPw] = useState(false);
+
+  const handleSetPassword = async () => {
+    if (!pwTarget) return;
+    if (newPassword.length < 8) {
+      toast.error("A senha deve ter no mínimo 8 caracteres");
+      return;
+    }
+    setSavingPw(true);
+    const { data, error } = await supabase.functions.invoke("admin-set-password", {
+      body: { targetUserId: pwTarget.userId, newPassword },
+    });
+    setSavingPw(false);
+    if (error || (data as any)?.error) {
+      toast.error((data as any)?.error ?? error?.message ?? "Erro ao redefinir senha");
+      return;
+    }
+    toast.success(`Senha de ${pwTarget.email} redefinida`);
+    setPwTarget(null);
+    setNewPassword("");
+  };
+
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["admin-users"],
