@@ -252,8 +252,34 @@ const AdminUsers = () => {
           })}
         </>
       )}
+
+      <Dialog open={!!pwTarget} onOpenChange={(o) => !o && setPwTarget(null)}>
+        <DialogContent className="max-w-[340px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Redefinir senha</DialogTitle>
+            <DialogDescription>
+              Defina uma nova senha para <strong>{pwTarget?.email}</strong> e informe-a à usuária.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="admin-new-password">Nova senha (mín. 8 caracteres)</Label>
+            <Input
+              id="admin-new-password"
+              type="text"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="rounded-xl"
+              placeholder="ex: empreendedora2026"
+            />
+          </div>
+          <Button onClick={handleSetPassword} disabled={savingPw} className="w-full rounded-xl">
+            {savingPw ? <Loader2 className="animate-spin" size={16} /> : "Salvar nova senha"}
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
 
 export default AdminUsers;
