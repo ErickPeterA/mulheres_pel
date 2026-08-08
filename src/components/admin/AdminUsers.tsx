@@ -16,7 +16,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Trash2, User as UserIcon, Check, X, Clock, Hash, Copy } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader2, Trash2, User as UserIcon, Check, X, Clock, Hash, Copy, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -26,6 +29,30 @@ const AdminUsers = () => {
   const queryClient = useQueryClient();
   const { user: currentUser } = useAuth();
   const [filter, setFilter] = useState<StatusFilter>("pending");
+  const [pwTarget, setPwTarget] = useState<{ userId: string; email: string } | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [savingPw, setSavingPw] = useState(false);
+
+  const handleSetPassword = async () => {
+    if (!pwTarget) return;
+    if (newPassword.length < 8) {
+      toast.error("A senha deve ter no mínimo 8 caracteres");
+      return;
+    }
+    setSavingPw(true);
+    const { data, error } = await supabase.functions.invoke("admin-set-password", {
+      body: { targetUserId: pwTarget.userId, newPassword },
+    });
+    setSavingPw(false);
+    if (error || (data as any)?.error) {
+      toast.error((data as any)?.error ?? error?.message ?? "Erro ao redefinir senha");
+      return;
+    }
+    toast.success(`Senha de ${pwTarget.email} redefinida`);
+    setPwTarget(null);
+    setNewPassword("");
+  };
+
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["admin-users"],
@@ -179,6 +206,17 @@ const AdminUsers = () => {
                   </div>
                 )}
 
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7 text-primary hover:text-primary hover:bg-primary/10"
+                  onClick={() => { setPwTarget({ userId: u.user_id, email: u.email }); setNewPassword(""); }}
+                  title="Redefinir senha"
+                >
+                  <KeyRound size={14} />
+                </Button>
+
+
                 {!isSelf && (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -214,8 +252,34 @@ const AdminUsers = () => {
           })}
         </>
       )}
+
+      <Dialog open={!!pwTarget} onOpenChange={(o) => !o && setPwTarget(null)}>
+        <DialogContent className="max-w-[340px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Redefinir senha</DialogTitle>
+            <DialogDescription>
+              Defina uma nova senha para <strong>{pwTarget?.email}</strong> e informe-a à usuária.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="admin-new-password">Nova senha (mín. 8 caracteres)</Label>
+            <Input
+              id="admin-new-password"
+              type="text"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="rounded-xl"
+              placeholder="ex: empreendedora2026"
+            />
+          </div>
+          <Button onClick={handleSetPassword} disabled={savingPw} className="w-full rounded-xl">
+            {savingPw ? <Loader2 className="animate-spin" size={16} /> : "Salvar nova senha"}
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
 
 export default AdminUsers;
