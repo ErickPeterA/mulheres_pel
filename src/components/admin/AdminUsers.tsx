@@ -206,6 +206,17 @@ const AdminUsers = () => {
                   </div>
                 )}
 
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7 text-primary hover:text-primary hover:bg-primary/10"
+                  onClick={() => { setPwTarget({ userId: u.user_id, email: u.email }); setNewPassword(""); }}
+                  title="Redefinir senha"
+                >
+                  <KeyRound size={14} />
+                </Button>
+
+
                 {!isSelf && (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
