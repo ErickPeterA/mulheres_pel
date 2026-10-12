@@ -32,6 +32,7 @@ const Auth = () => {
   const [lgpdConsent, setLgpdConsent] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
+  const [sendingRecovery, setSendingRecovery] = useState(false);
 
   useEffect(() => {
     if (!authLoading && user) navigate("/", { replace: true });
@@ -129,6 +130,7 @@ const Auth = () => {
 
 
   const handleForgot = async () => {
+    if (sendingRecovery) return;
     if (!loginEmail) {
       toast({ title: "Informe seu e-mail acima primeiro", variant: "destructive" });
       return;
@@ -139,14 +141,35 @@ const Auth = () => {
       toast({ title: "E-mail inválido", variant: "destructive" });
       return;
     }
-    const { error } = await supabase.auth.resetPasswordForEmail(loginEmail.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    if (error) {
-      toast({ title: "Erro", description: error.message, variant: "destructive" });
-      return;
+    setSendingRecovery(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(loginEmail.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) {
+        const isRateLimited = /rate limit|too many requests/i.test(error.message);
+        toast({
+          title: "Não foi possível enviar o e-mail",
+          description: isRateLimited
+            ? "Aguarde alguns minutos antes de solicitar outro link."
+            : "Tente novamente mais tarde. Se continuar, fale com o suporte.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "E-mail de recuperação solicitado",
+        description: "Verifique a caixa de entrada e o spam. O link expira em breve.",
+      });
+    } catch {
+      toast({
+        title: "Não foi possível enviar o e-mail",
+        description: "Verifique sua conexão e tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingRecovery(false);
     }
-    toast({ title: "Verifique seu e-mail para redefinir a senha" });
   };
 
   return (
@@ -206,9 +229,10 @@ const Auth = () => {
               <button
                 type="button"
                 onClick={handleForgot}
+                disabled={sendingRecovery}
                 className="text-xs text-primary hover:underline"
               >
-                Esqueci a senha
+                {sendingRecovery ? "Enviando..." : "Esqueci a senha"}
               </button>
               <Button type="submit" className="w-full rounded-xl" disabled={submitting}>
                 {submitting ? <Loader2 className="animate-spin" size={16} /> : "Entrar"}
